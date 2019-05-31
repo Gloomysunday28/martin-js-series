@@ -60,7 +60,7 @@
     }
   }
 
-  _.debounce = function(fn, wait, immediate) {
+  _.debounce = function(fn, wait, immediate) { // 函数防抖
     let timer = null
 
     function debounced() {
@@ -85,6 +85,26 @@
     }
 
     return debounced
+  }
+
+  _.throttle = function(fn, wait) { // 函数节流
+    let timer = null
+    let oldDate = +new Date()
+
+    return function() {
+      let nowDate = +new Date()
+
+      if (nowDate - oldDate < wait) {
+        if (timer) clearTimeout(timer)
+
+        timer = setTimeout(_ => {
+          fn && fn.apply(this, arguments)
+        }, wait)
+      } else {
+        fn && fn.apply(this, arguments)
+        oldDate = nowDate
+      }
+    }
   }
 
   _.curry = function (fn, len) {
