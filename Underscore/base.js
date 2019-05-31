@@ -28,35 +28,114 @@
     this._wrapped = param; // 如果是 _ 的实例, 就将wrapped赋值为参数
   }
 
-  _.isFunction = function(fn) {
+  _.slice = Array.prototype.slice
+
+  _.isFunction = function (fn) {
     return typeof fn === 'function'
   }
-  
-  _.mixin = function(obj) { // 提供新的方法给_.prototype 和 _, 方便实现面向对象和函数式调用两种方法
-    const push = Array.prototype.slice
+
+  _.sub_curry = function (fn) {
+    const args = _.slice.call(arguments, 1)
+    return function () {
+      /**
+       * newParams: [实参列表]
+       * fn: 上一次调用的函数
+       */
+      const newParams = args.concat(..._.slice.call(arguments))
+      return fn.apply(this, newParams) // 不断往外层冒出去
+    }
+  }
+
+  _.compose = function () { // 函数组合
+    let start = arguments.length - 1
+    let arg = _.slice.call(arguments)
+    return function () {
+      let result = arg[start--].apply(this, arguments)
+
+      while (start >= 0) {
+        result = arg[start--].call(this, result)
+      }
+
+      return result
+    }
+  }
+
+  _.curry = function (fn, len) {
+    let length = len || fn.length
+    return function () {
+      if (arguments.length < length) { // 如果调用函数的参数个数小于剩余需要传入的参数个数, 继续调用柯里化
+        const combined = [fn]
+        combined.push(..._.slice.call(arguments)) // 为了配合sub_curry第一步取消第一个参数
+        return _.curry(_.sub_curry.apply(this, combined), length - arguments.length)
+      } else {
+        return fn.apply(this, arguments)
+      }
+    }
+  }
+
+  _.addOne = function (x, y) {
+    return x + y
+  }
+
+  _.hasTwo = function (z) {
+    return z
+  }
+
+  _.changeFn = function (fn) {
+    return fn.apply(this, [1, 2])
+  }
+
+  _.chain = function (obj) {
+    var instance = _(obj)
+    instance._chain = true
+    return instance
+  }
+  _.push = function (obj, param) {
+    this._wrapped.push(param)
+    return chainResult(this, this._wrapped)
+  }
+  _.unshift = function (obj, param) {
+    this._wrapped.unshift(param)
+    return chainResult(this, this._wrapped)
+  }
+
+  _.value = function() {
+    this._chain = false
+    return this._wrapped
+  }
+
+  function chainResult(instance, obj) {
+    return instance._chain ? instance : obj
+  }
+
+  _.mixin = function (obj) { // 提供新的方法给_.prototype 和 _, 方便实现面向对象和函数式调用两种方法
+    const push = Array.prototype.push
     Object.keys(obj).forEach(o => {
       const fn = obj[o]
-      if (_.isFunction(fn)) {
-        _.prototype[o] = function() {
-          const oToObject = [...this._wrapped]
-          push.call(oToObject, ...arguments)
-          return fn.apply(this, oToObject)
-        }
-        _[o] = function() {
-          return fn.apply(this, ...arguments)
+      if (_.isFunction(fn)) { // 实参是数组形式
+        _.prototype[o] = function () {
+          const oToObject = [this._wrapped]
+          push.apply(oToObject, arguments)
+          return chainResult(this, fn.apply(this, oToObject))
         }
       }
     })
+
+    return _
   }
 
-  _.mixin({
-    addOne(x, y) {
-      return x + y
-    }
-  })
+  _.mixin(_)
 
-  console.log(_([1, 2]).addOne());
-  console.log(_.addOne([1, 2]));
+  // console.log(_.chain([1,2,3]).push(4).unshift(5).value())
+  console.log(_([1, 2, 3]).chain().push(4).unshift(5).value())
+
+  // console.log(_([1, 2]).addOne());
+  // console.log(_.addOne([1, 2]));
+  // console.log(_([_.addOne]).changeFn());
+  // console.log(_.changeFn(_.addOne));
+  // console.log(_.compose(_.hasTwo, _.curry(function(x, y) {
+  //   return x + y
+  // })(1))(2));
 
   /**
    * 1. 早期版本Node只有exports没有module.exports, 后面的版本增加了module.exports
