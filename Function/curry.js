@@ -17,7 +17,7 @@
        * newParams: [实参列表]
        * fn: 上一次调用的函数
        */
-      const newParams = args.concat(...slice.call(arguments))
+      const newParams = args.concat(slice.call(arguments))
       return fn.apply(this, newParams) // 不断往外层冒出去
     }
   }
