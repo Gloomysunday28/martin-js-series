@@ -10,6 +10,7 @@
   - [Javascript系列之偏函数](https://github.com/Gloomysunday28/martin-js-series/blob/master/Function/partial.js)
   - [Javascript系列之函数组合](https://github.com/Gloomysunday28/martin-js-series/blob/master/Function/compose.js)
   - [Javascript系列之函数记忆](https://github.com/Gloomysunday28/martin-js-series/blob/master/Function/memorize.js)
+  - [Javascript系列之函数防抖](https://github.com/Gloomysunday28/martin-js-series/blob/master/Function/debounce.js)
 
 - underscore
   - [Javascript系列之underscore-基础配置](https://github.com/Gloomysunday28/martin-js-series/blob/master/Underscore/base.js)
