@@ -13,3 +13,4 @@
 
 - underscore
   - [Javascript系列之underscore-基础配置](https://github.com/Gloomysunday28/martin-js-series/blob/master/Underscore/base.js)
+  - [Javascript系列之underscore-链式调用](https://github.com/Gloomysunday28/martin-js-series/blob/master/Underscore/chain.js)
