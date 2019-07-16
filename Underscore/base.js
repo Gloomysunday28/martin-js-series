@@ -110,7 +110,7 @@
   _.curry = function (fn, len) {
     let length = len || fn.length
     return function () {
-      if (arguments.length < length) { // 如果调用函数的参数个数小于剩余需要传入的参数个数, 继续调用柯里化
+      if (arguments.length < length) { // 如果调用函数的参数个数小于剩余需要传入的参数个数, 继续调用柯里化 _.xxx(params)  _(params).xxx()
         const combined = [fn]
         combined.push(..._.slice.call(arguments)) // 为了配合sub_curry第一步取消第一个参数
         return _.curry(_.sub_curry.apply(this, combined), length - arguments.length)
